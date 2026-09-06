@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  nombre        String
+  apellidos     String?
+  password      String
+  activo        Boolean  @default(true)
+  creado_en     DateTime @default(now())
+  actualizado_en DateTime @updatedAt
+  
+  @@map("usuarios")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  nombre      String   @unique
+  descripcion String?
+  creado_en   DateTime @default(now())
+  
+  @@map("roles")
+}
+
+model Permiso {
+  id          String   @id @default(cuid())
+  nombre      String   @unique
+  descripcion String?
+  creado_en   DateTime @default(now())
+  
+  @@map("permisos")
+}
+
+model Cliente {
+  id                    String   @id @default(cuid())
+  razon_social          String
+  nit                   String   @unique
+  tipo                  String
+  telefono              String?
+  email                 String?
+  credito_maximo        Float    @default(0)
+  credito_disponible    Float    @default(0)
+  latitud               Float?
+  longitud              Float?
+  estado                String   @default("activo")
+  creado_en             DateTime @default(now())
+  actualizado_en        DateTime @updatedAt
+  
+  @@map("clientes")
+}
+
+model Producto {
+  id                String   @id @default(cuid())
+  codigo            String   @unique
+  nombre            String
+  descripcion       String?
+  precio_base       Float
+  unidad_medida     String
+  categoria         String
+  estado            String   @default("activo")
+  creado_en         DateTime @default(now())
+  actualizado_en    DateTime @updatedAt
+  
+  @@map("productos")
+}
+
+model Venta {
+  id                  String   @id @default(cuid())
+  numero              String   @unique
+  cliente_id          String
+  tipo                String
+  metodo_pago         String
+  total_sin_impuestos Float
+  iva                 Float    @default(0.16)
+  descuento           Float    @default(0)
+  total_con_impuestos Float
+  estado              String   @default("completada")
+  creado_en           DateTime @default(now())
+  actualizado_en      DateTime @updatedAt
+  
+  @@map("ventas")
+}
+
+model Inventario {
+  id               String   @id @default(cuid())
+  producto_id      String
+  cantidad         Float    @default(0)
+  cantidad_minima  Float    @default(5)
+  cantidad_maxima  Float    @default(100)
+  actualizado_en   DateTime @updatedAt
+  
+  @@map("inventario")
+}
+
+model Credito {
+  id                String   @id @default(cuid())
+  numero            String   @unique
+  cliente_id        String
+  monto             Float
+  saldo_deudor      Float
+  tasa_interes      Float    @default(0.02)
+  interes_acumulado Float   @default(0)
+  plazo_dias        Int      @default(30)
+  fecha_vencimiento DateTime
+  estado            String   @default("vigente")
+  creado_en         DateTime @default(now())
+  actualizado_en    DateTime @updatedAt
+  
+  @@map("creditos")
+}
+
+model Ruta {
+  id          String   @id @default(cuid())
+  nombre      String
+  descripcion String?
+  vendedor_id String
+  estado      String   @default("activa")
+  creado_en   DateTime @default(now())
+  
+  @@map("rutas")
+}
+
+model BitacoraAuditoria {
+  id          String   @id @default(cuid())
+  usuario_id  String?
+  accion      String
+  tabla       String
+  registro_id String
+  creado_en   DateTime @default(now())
+  
+  @@map("bitacora_auditoria")
+}
